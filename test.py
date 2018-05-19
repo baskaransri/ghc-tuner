@@ -62,16 +62,16 @@ def evaluate(ghc_root, level, filePath, trials):
 @click.option('--config-dir', required=True, help='Directory containing .config files to be tested.')
 @click.option('--ghc-root', default='./ghc', help='Location of GHC source root.')
 @click.option('--trials', default=30, help='Value of NoFibRuns')
-@click.option('--debug', default=False, help='show the configurations and exit')
-def go(level, config_dir, ghc_root, trials, debug):
+@click.option('--show-configs', default=False, help='show the configurations and exit')
+def go(level, config_dir, ghc_root, trials, show_configs):
     # sanity checks
     assert(0 <= level <= 2)
     assert(trials > 0)
 
     # run the tests
     for (filePath, passes) in enumerateConfigs(config_dir):
-        if debug:
-            print ("saw the following passes in " + filePath)
+        if show_configs:
+            print ("---\nsaw the following passes in " + filePath)
             print (passes + "\n")
             continue
 
