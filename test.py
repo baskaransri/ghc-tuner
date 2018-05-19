@@ -15,14 +15,19 @@ def enumerateConfigs(config_dir):
 
         with open(filePath, 'r') as myfile:
             data = myfile.read()
-            # strip comments and remove newlines
+            # strip comments, remove newlines, and remove excessive spaces.
             data = re.sub(
                     r'#[^\n]+\n',
-                    r' ',
+                    r'\n',
                     data
                 )
             data = re.sub(
                     r'\n',
+                    r' ',
+                    data
+                )
+            data = re.sub(
+                    r' +',
                     r' ',
                     data
                 )
@@ -57,13 +62,19 @@ def evaluate(ghc_root, level, filePath, trials):
 @click.option('--config-dir', required=True, help='Directory containing .config files to be tested.')
 @click.option('--ghc-root', default='./ghc', help='Location of GHC source root.')
 @click.option('--trials', default=30, help='Value of NoFibRuns')
-def go(level, config_dir, ghc_root, trials):
+@click.option('--debug', default=False, help='show the configurations and exit')
+def go(level, config_dir, ghc_root, trials, debug):
     # sanity checks
     assert(0 <= level <= 2)
     assert(trials > 0)
 
     # run the tests
     for (filePath, passes) in enumerateConfigs(config_dir):
+        if debug:
+            print ("saw the following passes in " + filePath)
+            print (passes + "\n")
+            continue
+
         replacePassFile(ghc_root, level, passes)
         evaluate(ghc_root, level, filePath, trials)
 
