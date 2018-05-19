@@ -3,6 +3,7 @@
 import click
 import os
 import re
+import subprocess
 
 
 
@@ -30,17 +31,32 @@ def enumerateConfigs(config_dir):
             yield (filename, data)
 
 
+def replacePassFile(ghc_root, level, data):
+    def tupIt(lvl, content):
+        return ("(" + str(lvl) + "," + "\"" + content + "\")")
+
+    otherLevels = {0, 1, 2} - {level}
+    options = [tupIt(level, data)]
+    for lvl in otherLevels:
+        options.append(tupIt(lvl, "-invalid-pass"))
+
+    contents = ",".join(options)
+    contents = "[" + contents + "]"
+
+    path = ghc_root + "/inplace/lib/llvm-passes"
+    with open(path, 'w') as passFile:
+        passFile.write(contents)
+
+
 @click.command()
 @click.option('--level', default=2, help='GHC optimization level to tune for.')
 @click.option('--config-dir', required=True, help='Directory containing .config files to be tested.')
 @click.option('--ghc-root', default='./ghc', help='Location of GHC source root.')
 def go(level, config_dir, ghc_root):
-    print (level)
-    print (config_dir)
-    print (ghc_root)
 
-    for config in enumerateConfigs(config_dir):
-        print (config)
+    for (name, passes) in enumerateConfigs(config_dir):
+        replacePassFile(ghc_root, level, passes)
+        # TODO run evaluation
 
 if __name__ == '__main__':
     go()
