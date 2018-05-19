@@ -5,8 +5,6 @@ import os
 import re
 import subprocess
 
-
-
 def enumerateConfigs(config_dir):
     for filename in os.listdir(config_dir):
         if not (filename.endswith(".config")):
@@ -28,7 +26,7 @@ def enumerateConfigs(config_dir):
                     r' ',
                     data
                 )
-            yield (filename, data)
+            yield (filePath, data)
 
 
 def replacePassFile(ghc_root, level, data):
@@ -47,16 +45,26 @@ def replacePassFile(ghc_root, level, data):
     with open(path, 'w') as passFile:
         passFile.write(contents)
 
+def evaluate(ghc_root, level, filePath, trials):
+    extraFlag = "-fllvm -O" + str(level)
+    outputFile = filePath + ".results"
+    cmd = ["./run_nofib.sh", extraFlag, outputFile, str(trials)]
+    subprocess.run(cmd, check=True)
 
 @click.command()
 @click.option('--level', default=2, help='GHC optimization level to tune for.')
 @click.option('--config-dir', required=True, help='Directory containing .config files to be tested.')
 @click.option('--ghc-root', default='./ghc', help='Location of GHC source root.')
-def go(level, config_dir, ghc_root):
+@click.option('--trials', default=30, help='Value of NoFibRuns')
+def go(level, config_dir, ghc_root, trials):
+    # sanity checks
+    assert(0 <= level <= 2)
+    assert(trials > 0)
 
-    for (name, passes) in enumerateConfigs(config_dir):
+    # run the tests!
+    for (filePath, passes) in enumerateConfigs(config_dir):
         replacePassFile(ghc_root, level, passes)
-        # TODO run evaluation
+        evaluate(ghc_root, level, filePath, trials)
 
 if __name__ == '__main__':
     go()
