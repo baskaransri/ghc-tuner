@@ -15,7 +15,7 @@ Then, choose your own adventure below.
 
 #### manual tuning
 
-1. `test.sh` accepts a directory and optimization level for GHC (e.g., "-O2")
+1. `test.py` accepts a directory and optimization level for GHC (e.g., "-O2")
    and tries all of the pass sequence files in the directory, and dumps a report.
 
 
