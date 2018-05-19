@@ -51,6 +51,7 @@ def evaluate(ghc_root, level, filePath, trials):
     cmd = ["./run_nofib.sh", extraFlag, outputFile, str(trials)]
     subprocess.run(cmd, check=True)
 
+
 @click.command()
 @click.option('--level', default=2, help='GHC optimization level to tune for.')
 @click.option('--config-dir', required=True, help='Directory containing .config files to be tested.')
@@ -61,10 +62,13 @@ def go(level, config_dir, ghc_root, trials):
     assert(0 <= level <= 2)
     assert(trials > 0)
 
-    # run the tests!
+    # run the tests
     for (filePath, passes) in enumerateConfigs(config_dir):
         replacePassFile(ghc_root, level, passes)
         evaluate(ghc_root, level, filePath, trials)
+
+
+#################################
 
 if __name__ == '__main__':
     go()
