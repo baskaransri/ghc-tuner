@@ -1,0 +1,6 @@
+
+
+To look at the passes that are run by opt, use:
+
+> touch empty.ll
+> opt -disable-output -debug-pass=Structure -O3 empty.ll 2> output.txt
