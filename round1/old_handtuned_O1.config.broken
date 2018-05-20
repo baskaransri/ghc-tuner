@@ -1,3 +1,4 @@
+# somehow, this sequence of passes causes opt to hang on nofib/real/fem
 -targetlibinfo
 -tti
 -tbaa
