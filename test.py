@@ -50,10 +50,11 @@ def replacePassFile(ghc_root, level, data):
     with open(path, 'w') as passFile:
         passFile.write(contents)
 
-def evaluate(ghc_root, level, filePath, trials):
+def evaluate(ghc_root, level, filePath, trials, mode):
     extraFlag = "-fllvm -O" + str(level)
     outputFile = filePath + ".results"
-    cmd = ["./run_nofib.sh", extraFlag, outputFile, str(trials)]
+    cmd = ["./run_nofib.sh", extraFlag, outputFile, str(trials), mode]
+    print ("running: " + str(cmd))
     subprocess.run(cmd, check=True)
 
 
@@ -62,11 +63,13 @@ def evaluate(ghc_root, level, filePath, trials):
 @click.option('--config-dir', required=True, help='Directory containing .config files to be tested.')
 @click.option('--ghc-root', default='./ghc', help='Location of GHC source root.')
 @click.option('--trials', default=30, help='Value of NoFibRuns')
+@click.option('--mode', default='slow', help='nofib test mode: slow, norm, fast')
 @click.option('--show-configs', default=False, help='show the configurations and exit')
-def go(level, config_dir, ghc_root, trials, show_configs):
+def go(level, config_dir, ghc_root, trials, mode, show_configs):
     # sanity checks
     assert(0 <= level <= 2)
     assert(trials > 0)
+    assert(mode in {'slow', 'norm', 'fast'})
 
     # run the tests
     for (filePath, passes) in enumerateConfigs(config_dir):
@@ -76,7 +79,7 @@ def go(level, config_dir, ghc_root, trials, show_configs):
             continue
 
         replacePassFile(ghc_root, level, passes)
-        evaluate(ghc_root, level, filePath, trials)
+        evaluate(ghc_root, level, filePath, trials, mode)
 
 
 #################################
