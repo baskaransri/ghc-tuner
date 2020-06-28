@@ -53,7 +53,8 @@ def replacePassFile(ghc_root, level, data):
 def evaluate(ghc_root, level, filePath, trials, mode):
     extraFlag = "-fllvm -O" + str(level)
     outputFile = filePath + ".results"
-    cmd = ["./run_nofib.sh", extraFlag, outputFile, str(trials), mode]
+    compiler_path = os.path.realpath(ghc_root + '/inplace/bin/ghc')
+    cmd = ["./run_nofib.sh", extraFlag, outputFile, str(trials), mode, compiler_path]
     print ("running: " + str(cmd))
     subprocess.run(cmd, check=True)
 
