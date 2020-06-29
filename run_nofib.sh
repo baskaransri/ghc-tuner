@@ -13,6 +13,6 @@ set -x
 pushd ghc/nofib
 make clean
 make boot mode=$MODE HC=$COMPILER
-make -k mode=$MODE NoFibRuns=$TRIALS EXTRA_HC_OPTS="$EXTRA_FLAG" 2>&1 | tee ./nofib-log
+make -k mode=$MODE HC=$COMPILER NoFibRuns=$TRIALS EXTRA_HC_OPTS="$EXTRA_FLAG" 2>&1 | tee ./nofib-log
 popd
 mv ghc/nofib/nofib-log $OUTPUT_FILE
